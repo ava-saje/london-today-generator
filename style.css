@@ -278,17 +278,27 @@ body {
   margin: 0 0 18px;
 }
 
+.result-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0 0 22px;
+}
+
 .result-link {
   display: inline-block;
   font-size: 0.92rem;
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
-  margin: 0 0 22px;
 }
 
 .result-link:hover {
   text-decoration: underline;
+}
+
+.result-link[hidden] {
+  display: none;
 }
 
 .result-meta {

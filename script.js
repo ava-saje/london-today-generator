@@ -147,6 +147,14 @@ function renderResult(spot) {
   const mapsQuery = encodeURIComponent(`${spot.name}, London`);
   document.getElementById('result-link').href = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
 
+  const websiteLink = document.getElementById('result-website');
+  if (spot.website) {
+    websiteLink.href = spot.website;
+    websiteLink.hidden = false;
+  } else {
+    websiteLink.hidden = true;
+  }
+
   const meta = document.getElementById('result-meta');
   meta.innerHTML = '';
   const labels = [
