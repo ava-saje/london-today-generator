@@ -1,0 +1,312 @@
+:root {
+  --bg: #f5f1e8;
+  --paper: #fffdf9;
+  --ink: #1f1b16;
+  --ink-soft: #6f6656;
+  --ink-faint: #a89e8c;
+  --accent: #b0492c;
+  --accent-soft: #f0e0d3;
+  --border: #e6ddcc;
+  --radius: 14px;
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 460px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px 20px;
+}
+
+/* On roomier screens, present it as a distinct panel rather than a stretched page */
+@media (min-width: 640px) {
+  body { padding: 40px 16px; }
+  .app {
+    min-height: auto;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 30px 60px -30px rgba(31, 27, 22, 0.25);
+    padding: 40px 40px 28px;
+  }
+}
+
+/* ---------- Header ---------- */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  min-height: 20px;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
+}
+
+.progress {
+  display: flex;
+  gap: 7px;
+}
+
+.progress .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.progress .dot.filled {
+  background: var(--accent);
+}
+
+.progress .dot.current {
+  transform: scale(1.3);
+}
+
+/* ---------- Screens ---------- */
+
+.screens {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  animation: rise 0.35s ease;
+}
+
+.screen.active {
+  display: flex;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Intro ---------- */
+
+#screen-intro {
+  justify-content: center;
+  text-align: left;
+  flex: 1;
+}
+
+.title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 2.5rem;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+
+.subtitle {
+  font-size: 1.02rem;
+  color: var(--ink-soft);
+  margin: 0 0 32px;
+  line-height: 1.5;
+}
+
+/* ---------- Steps ---------- */
+
+.step-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.question {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.7rem;
+  margin: 0 0 24px;
+  letter-spacing: -0.01em;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+  padding: 16px 18px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+@media (min-width: 640px) {
+  .option-card { background: var(--bg); }
+}
+
+.option-card:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.option-card:active {
+  transform: scale(0.98);
+}
+
+.option-card .opt-title {
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.option-card .opt-sub {
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+.btn-back {
+  align-self: flex-start;
+  margin-top: 20px;
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  font-family: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.btn-back:hover { color: var(--ink-soft); }
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 15px 26px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff9f2;
+  align-self: flex-start;
+}
+
+.btn-primary:hover { opacity: 0.92; }
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.btn-ghost:hover { border-color: var(--ink-faint); }
+
+/* ---------- Result ---------- */
+
+#screen-result {
+  justify-content: center;
+  flex: 1;
+}
+
+.result-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+
+.result-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 2.1rem;
+  line-height: 1.15;
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
+}
+
+.result-desc {
+  font-size: 1.04rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 0 20px;
+}
+
+.result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.chip {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 6px 13px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.result-actions .btn { flex: 1; text-align: center; }
+
+/* ---------- Footer ---------- */
+
+.app-footer {
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 0.76rem;
+  margin-top: 28px;
+}
