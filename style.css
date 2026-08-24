@@ -1,12 +1,12 @@
 :root {
-  --bg: #f5f1e8;
-  --paper: #fffdf9;
-  --ink: #1f1b16;
-  --ink-soft: #6f6656;
-  --ink-faint: #a89e8c;
-  --accent: #b0492c;
-  --accent-soft: #f0e0d3;
-  --border: #e6ddcc;
+  --bg: #fbecb0;
+  --paper: #fffaea;
+  --ink: #3d0f18;
+  --ink-soft: #8a5a55;
+  --ink-faint: #c2a35e;
+  --accent: #832639;
+  --accent-soft: #bfe6f2;
+  --border: #f0dd8a;
   --radius: 14px;
   font-size: 16px;
 }
@@ -232,7 +232,7 @@ body {
 
 .btn-primary {
   background: var(--accent);
-  color: #fff9f2;
+  color: #fff6de;
   align-self: flex-start;
 }
 
@@ -275,7 +275,20 @@ body {
   font-size: 1.04rem;
   color: var(--ink-soft);
   line-height: 1.55;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
+}
+
+.result-link {
+  display: inline-block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  margin: 0 0 22px;
+}
+
+.result-link:hover {
+  text-decoration: underline;
 }
 
 .result-meta {
