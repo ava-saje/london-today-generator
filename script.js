@@ -144,9 +144,6 @@ function renderResult(spot) {
   document.getElementById('result-name').textContent = spot.name;
   document.getElementById('result-desc').textContent = spot.description;
 
-  const mapsQuery = encodeURIComponent(`${spot.name}, London`);
-  document.getElementById('result-link').href = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
-
   const websiteLink = document.getElementById('result-website');
   if (spot.website) {
     websiteLink.href = spot.website;
