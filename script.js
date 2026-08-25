@@ -69,10 +69,10 @@ function poolMatchingAnswersSoFar(excludeField) {
   );
 }
 
-// Budget always shows all three tiers, even if the current combo has zero matches for
-// one — pickSpot's relax logic substitutes a different tier in that case rather than
+// Budget and time always show every option, even if the current combo has zero matches
+// for one — pickSpot's relax logic substitutes something else in that case rather than
 // the option disappearing from the question.
-const UNPRUNED_FIELDS = ['budget'];
+const UNPRUNED_FIELDS = ['budget', 'time'];
 
 // Which of a step's options actually have at least one match given prior answers.
 // Falls back to the full list if narrowing would leave nothing (should be rare —
@@ -150,6 +150,14 @@ function handleBack() {
   } else {
     showIntro();
   }
+}
+
+// From the result screen, currentStepIndex is still sitting on the last step (time) —
+// selectOption never advances past it before calling showResult(). So "Back" from a
+// result just re-opens that last question, keeping every earlier answer intact.
+function backFromResult() {
+  delete answers[STEP_IDS[currentStepIndex]];
+  renderStep();
 }
 
 function pickSpot(excludeName) {
@@ -248,6 +256,7 @@ function init() {
   document.querySelectorAll('[data-back]').forEach((btn) => btn.addEventListener('click', handleBack));
   document.getElementById('btn-regenerate').addEventListener('click', regenerate);
   document.getElementById('btn-restart').addEventListener('click', restart);
+  document.getElementById('btn-result-back').addEventListener('click', backFromResult);
 
   setProgressVisible(false);
 }
