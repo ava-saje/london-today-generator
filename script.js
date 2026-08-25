@@ -167,11 +167,13 @@ function renderResult(spot) {
 
   const meta = document.getElementById('result-meta');
   meta.innerHTML = '';
+  // Only show a chip when the result actually satisfies that choice — a relaxed-away
+  // constraint (see pickSpot's fallback chain) should never claim a false match.
   const labels = [
-    STEP_OPTIONS.vibe.find((o) => o.value === answers.vibe),
-    STEP_OPTIONS.budget.find((o) => o.value === answers.budget),
-    STEP_OPTIONS.time.find((o) => o.value === answers.time),
-    answers.area !== 'any' ? STEP_OPTIONS.area.find((o) => o.value === answers.area) : null,
+    spot.vibes.includes(answers.vibe) ? STEP_OPTIONS.vibe.find((o) => o.value === answers.vibe) : null,
+    spot.budgets.includes(answers.budget) ? STEP_OPTIONS.budget.find((o) => o.value === answers.budget) : null,
+    spot.times.includes(answers.time) ? STEP_OPTIONS.time.find((o) => o.value === answers.time) : null,
+    answers.area !== 'any' && spot.area.includes(answers.area) ? STEP_OPTIONS.area.find((o) => o.value === answers.area) : null,
   ].filter(Boolean).map((o) => o.title);
 
   labels.forEach((label) => {
