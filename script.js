@@ -1,4 +1,12 @@
 const STEP_OPTIONS = {
+  area: [
+    { value: 'central', title: 'Central', sub: 'West End, City, Southbank' },
+    { value: 'north', title: 'North', sub: 'Camden, Islington, Hampstead' },
+    { value: 'south', title: 'South', sub: 'Brixton, Greenwich, Battersea' },
+    { value: 'east', title: 'East', sub: 'Shoreditch, Hackney, Canary Wharf' },
+    { value: 'west', title: 'West', sub: 'Notting Hill, Kensington, Chelsea' },
+    { value: 'any', title: 'Anywhere', sub: "Don't mind travelling" },
+  ],
   category: [
     { value: 'activity', title: 'Activity', sub: 'Museums, parks, markets, viewpoints' },
     { value: 'craft', title: 'Arts & Crafts', sub: 'Pottery, workshops, hands-on classes' },
@@ -23,14 +31,6 @@ const STEP_OPTIONS = {
     { value: 'evening', title: 'Evening', sub: '' },
     { value: 'late', title: 'Late night', sub: '' },
   ],
-  area: [
-    { value: 'central', title: 'Central', sub: 'West End, City, Southbank' },
-    { value: 'north', title: 'North', sub: 'Camden, Islington, Hampstead' },
-    { value: 'south', title: 'South', sub: 'Brixton, Greenwich, Battersea' },
-    { value: 'east', title: 'East', sub: 'Shoreditch, Hackney, Canary Wharf' },
-    { value: 'west', title: 'West', sub: 'Notting Hill, Kensington, Chelsea' },
-    { value: 'any', title: 'Anywhere', sub: "Don't mind travelling" },
-  ],
 };
 
 const CATEGORY_LABELS = {
@@ -40,11 +40,46 @@ const CATEGORY_LABELS = {
   nightlife: 'Club / Nightlife',
 };
 
-const STEP_IDS = ['category', 'vibe', 'budget', 'time', 'area'];
+// How each step's answer maps onto a spot's own field, and how to test a match.
+const FIELD_MATCHERS = {
+  area: (spot, value) => value === 'any' || spot.area.includes(value),
+  category: (spot, value) => spot.category === value,
+  vibe: (spot, value) => spot.vibes.includes(value),
+  budget: (spot, value) => spot.budgets.includes(value),
+  time: (spot, value) => spot.times.includes(value),
+};
+
+const STEP_IDS = ['area', 'category', 'vibe', 'budget', 'time'];
 
 let currentStepIndex = 0;
 let answers = {};
 let lastResultName = null;
+
+// The pool of spots consistent with every answer given so far, except `excludeField`
+// (so a step can show what's still possible for itself, ignoring its own prior answer).
+function poolMatchingAnswersSoFar(excludeField) {
+  return SPOTS.filter((spot) =>
+    STEP_IDS.every((field) => {
+      if (field === excludeField) return true;
+      const value = answers[field];
+      if (value === undefined) return true;
+      return FIELD_MATCHERS[field](spot, value);
+    })
+  );
+}
+
+// Which of a step's options actually have at least one match given prior answers.
+// Falls back to the full list if narrowing would leave nothing (should be rare —
+// pickSpot's own relax logic is the final safety net regardless).
+function availableOptions(field) {
+  const pool = poolMatchingAnswersSoFar(field);
+  const full = STEP_OPTIONS[field];
+  const kept = full.filter((opt) => {
+    if (field === 'area' && opt.value === 'any') return true;
+    return pool.some((spot) => FIELD_MATCHERS[field](spot, opt.value));
+  });
+  return kept.length ? kept : full;
+}
 
 function renderOptions(key, list, containerId) {
   const container = document.getElementById(containerId);
@@ -78,8 +113,9 @@ function showIntro() {
 
 function renderStep() {
   document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
-  const activeId = 'screen-' + STEP_IDS[currentStepIndex];
-  document.getElementById(activeId).classList.add('active');
+  const field = STEP_IDS[currentStepIndex];
+  document.getElementById('screen-' + field).classList.add('active');
+  renderOptions(field, availableOptions(field), 'options-' + field);
   setProgressVisible(true);
   updateProgress();
 }
@@ -99,6 +135,9 @@ function updateProgress() {
 function handleBack() {
   if (currentStepIndex > 0) {
     currentStepIndex--;
+    // Clear this step's answer and everything after it, so a stale choice from an
+    // abandoned path can't leak into dynamic option filtering on the way forward again.
+    STEP_IDS.slice(currentStepIndex).forEach((field) => { delete answers[field]; });
     renderStep();
   } else {
     showIntro();
@@ -112,6 +151,8 @@ function pickSpot(excludeName) {
 
   // Relax constraints in order (area, then time, then budget, then vibe) until something
   // matches, so odd combinations (e.g. romantic + nightlife) always return a plausible real spot.
+  // With options now pruned per-step, this should rarely need to relax anything — but it
+  // stays as the final safety net for whatever the pruning doesn't fully cover.
   const attempts = [
     (s) => areaMatch(s) && s.vibes.includes(vibe) && s.budgets.includes(budget) && s.times.includes(time),
     (s) => s.vibes.includes(vibe) && s.budgets.includes(budget) && s.times.includes(time),
@@ -192,12 +233,6 @@ function restart() {
 }
 
 function init() {
-  renderOptions('category', STEP_OPTIONS.category, 'options-category');
-  renderOptions('vibe', STEP_OPTIONS.vibe, 'options-vibe');
-  renderOptions('budget', STEP_OPTIONS.budget, 'options-budget');
-  renderOptions('time', STEP_OPTIONS.time, 'options-time');
-  renderOptions('area', STEP_OPTIONS.area, 'options-area');
-
   document.getElementById('btn-start').addEventListener('click', () => {
     currentStepIndex = 0;
     renderStep();
