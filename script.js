@@ -16,9 +16,10 @@ const STEP_OPTIONS = {
   vibe: [
     { value: 'chill', title: 'Chill', sub: 'Slow, easy, low-key' },
     { value: 'adventurous', title: 'Adventurous', sub: 'Something new, a bit bold' },
-    { value: 'romantic', title: 'Romantic', sub: 'For two, or feeling it' },
-    { value: 'social', title: 'Social', sub: 'Best with people around' },
+    { value: 'romantic', title: 'Romantic', sub: 'Made for two' },
+    { value: 'social', title: 'Social', sub: 'Best with friends around' },
     { value: 'productive', title: 'Productive', sub: 'Get something done' },
+    { value: 'solo', title: 'Solo', sub: 'Just you today' },
   ],
   budget: [
     { value: 'low', title: 'Free / Low-cost', sub: 'Keeping it light' },
