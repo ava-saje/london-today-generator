@@ -68,12 +68,19 @@ function poolMatchingAnswersSoFar(excludeField) {
   );
 }
 
+// Budget always shows all three tiers, even if the current combo has zero matches for
+// one — pickSpot's relax logic substitutes a different tier in that case rather than
+// the option disappearing from the question.
+const UNPRUNED_FIELDS = ['budget'];
+
 // Which of a step's options actually have at least one match given prior answers.
 // Falls back to the full list if narrowing would leave nothing (should be rare —
 // pickSpot's own relax logic is the final safety net regardless).
 function availableOptions(field) {
-  const pool = poolMatchingAnswersSoFar(field);
   const full = STEP_OPTIONS[field];
+  if (UNPRUNED_FIELDS.includes(field)) return full;
+
+  const pool = poolMatchingAnswersSoFar(field);
   const kept = full.filter((opt) => {
     if (field === 'area' && opt.value === 'any') return true;
     return pool.some((spot) => FIELD_MATCHERS[field](spot, opt.value));
