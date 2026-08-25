@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What Should I Do in London Today</title>
-<meta name="description" content="Answer four quick questions and get a real London spot to go do right now.">
+<meta name="description" content="Answer five quick questions and get a real London spot to go do right now.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,7 @@
       <span class="dot" data-step="1"></span>
       <span class="dot" data-step="2"></span>
       <span class="dot" data-step="3"></span>
+      <span class="dot" data-step="4"></span>
     </div>
   </header>
 
@@ -30,7 +31,7 @@
     <!-- INTRO -->
     <section class="screen active" id="screen-intro">
       <h1 class="title">What Should I Do in London Today?</h1>
-      <p class="subtitle">Answer four quick questions, get one real place to go.</p>
+      <p class="subtitle">Answer five quick questions, get one real place to go.</p>
       <button class="btn btn-primary" id="btn-start">Let's go</button>
     </section>
 
@@ -66,12 +67,21 @@
       <button class="btn-back" data-back>Back</button>
     </section>
 
+    <!-- STEP: AREA -->
+    <section class="screen" id="screen-area" data-step-index="4">
+      <p class="step-label">05 &nbsp;—&nbsp; Whereabouts?</p>
+      <h2 class="question">Pick a part of town</h2>
+      <div class="options" id="options-area"></div>
+      <button class="btn-back" data-back>Back</button>
+    </section>
+
     <!-- RESULT -->
     <section class="screen" id="screen-result">
       <p class="result-tag" id="result-category"></p>
       <h2 class="result-name" id="result-name"></h2>
       <p class="result-desc" id="result-desc"></p>
       <div class="result-links">
+        <a class="result-link" id="result-maps" href="#" target="_blank" rel="noopener noreferrer">View on Google Maps &#8594;</a>
         <a class="result-link" id="result-website" href="#" target="_blank" rel="noopener noreferrer">Visit website &#8594;</a>
       </div>
       <div class="result-meta" id="result-meta"></div>

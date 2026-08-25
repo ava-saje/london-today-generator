@@ -23,6 +23,14 @@ const STEP_OPTIONS = {
     { value: 'evening', title: 'Evening', sub: '' },
     { value: 'late', title: 'Late night', sub: '' },
   ],
+  area: [
+    { value: 'central', title: 'Central', sub: 'West End, City, Southbank' },
+    { value: 'north', title: 'North', sub: 'Camden, Islington, Hampstead' },
+    { value: 'south', title: 'South', sub: 'Brixton, Greenwich, Battersea' },
+    { value: 'east', title: 'East', sub: 'Shoreditch, Hackney, Canary Wharf' },
+    { value: 'west', title: 'West', sub: 'Notting Hill, Kensington, Chelsea' },
+    { value: 'any', title: 'Anywhere', sub: "Don't mind travelling" },
+  ],
 };
 
 const CATEGORY_LABELS = {
@@ -32,7 +40,7 @@ const CATEGORY_LABELS = {
   nightlife: 'Club / Nightlife',
 };
 
-const STEP_IDS = ['category', 'vibe', 'budget', 'time'];
+const STEP_IDS = ['category', 'vibe', 'budget', 'time', 'area'];
 
 let currentStepIndex = 0;
 let answers = {};
@@ -98,12 +106,14 @@ function handleBack() {
 }
 
 function pickSpot(excludeName) {
-  const { category, vibe, budget, time } = answers;
+  const { category, vibe, budget, time, area } = answers;
   const pool = SPOTS.filter((s) => s.category === category);
+  const areaMatch = (s) => area === 'any' || s.area.includes(area);
 
-  // Relax constraints in order (time, then budget, then vibe) until something matches,
-  // so odd combinations (e.g. romantic + nightlife) always return a plausible real spot.
+  // Relax constraints in order (area, then time, then budget, then vibe) until something
+  // matches, so odd combinations (e.g. romantic + nightlife) always return a plausible real spot.
   const attempts = [
+    (s) => areaMatch(s) && s.vibes.includes(vibe) && s.budgets.includes(budget) && s.times.includes(time),
     (s) => s.vibes.includes(vibe) && s.budgets.includes(budget) && s.times.includes(time),
     (s) => s.vibes.includes(vibe) && s.budgets.includes(budget),
     (s) => s.vibes.includes(vibe),
@@ -144,6 +154,9 @@ function renderResult(spot) {
   document.getElementById('result-name').textContent = spot.name;
   document.getElementById('result-desc').textContent = spot.description;
 
+  const mapsQuery = encodeURIComponent(`${spot.name}, London`);
+  document.getElementById('result-maps').href = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
   const websiteLink = document.getElementById('result-website');
   if (spot.website) {
     websiteLink.href = spot.website;
@@ -158,6 +171,7 @@ function renderResult(spot) {
     STEP_OPTIONS.vibe.find((o) => o.value === answers.vibe),
     STEP_OPTIONS.budget.find((o) => o.value === answers.budget),
     STEP_OPTIONS.time.find((o) => o.value === answers.time),
+    answers.area !== 'any' ? STEP_OPTIONS.area.find((o) => o.value === answers.area) : null,
   ].filter(Boolean).map((o) => o.title);
 
   labels.forEach((label) => {
@@ -180,6 +194,7 @@ function init() {
   renderOptions('vibe', STEP_OPTIONS.vibe, 'options-vibe');
   renderOptions('budget', STEP_OPTIONS.budget, 'options-budget');
   renderOptions('time', STEP_OPTIONS.time, 'options-time');
+  renderOptions('area', STEP_OPTIONS.area, 'options-area');
 
   document.getElementById('btn-start').addEventListener('click', () => {
     currentStepIndex = 0;
