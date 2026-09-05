@@ -69,10 +69,10 @@ function poolMatchingAnswersSoFar(excludeField) {
   );
 }
 
-// Budget and time always show every option, even if the current combo has zero matches
-// for one — pickSpot's relax logic substitutes something else in that case rather than
-// the option disappearing from the question.
-const UNPRUNED_FIELDS = ['budget', 'time'];
+// Budget, time and vibe always show every option, even if the current combo has zero
+// matches for one — pickSpot's relax logic substitutes something else in that case
+// rather than the option disappearing from the question.
+const UNPRUNED_FIELDS = ['budget', 'time', 'vibe'];
 
 // Which of a step's options actually have at least one match given prior answers.
 // Falls back to the full list if narrowing would leave nothing (should be rare —
