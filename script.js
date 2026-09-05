@@ -160,30 +160,37 @@ function backFromResult() {
   renderStep();
 }
 
+// Disposability order when a combo needs relaxing at all — area first (most flexible),
+// vibe last (the actual mood signal, most worth protecting).
+const RELAX_ORDER = ['area', 'time', 'budget', 'vibe'];
+
+function constraintMatches(spot, field, value) {
+  if (field === 'area') return value === 'any' || spot.area.includes(value);
+  if (field === 'vibe') return spot.vibes.includes(value);
+  if (field === 'budget') return spot.budgets.includes(value);
+  return spot.times.includes(value);
+}
+
 function pickSpot(excludeName) {
   const { category, vibe, budget, time, area } = answers;
   const pool = SPOTS.filter((s) => s.category === category);
-  const areaMatch = (s) => area === 'any' || s.area.includes(area);
+  const values = { area, time, budget, vibe };
 
-  // Relax constraints in order (area, then time, then budget, then vibe) until something
-  // matches, so odd combinations (e.g. romantic + nightlife) always return a plausible real spot.
-  // With options now pruned per-step, this should rarely need to relax anything — but it
-  // stays as the final safety net for whatever the pruning doesn't fully cover.
-  const attempts = [
-    (s) => areaMatch(s) && s.vibes.includes(vibe) && s.budgets.includes(budget) && s.times.includes(time),
-    (s) => s.vibes.includes(vibe) && s.budgets.includes(budget) && s.times.includes(time),
-    (s) => s.vibes.includes(vibe) && s.budgets.includes(budget),
-    (s) => s.vibes.includes(vibe),
-    () => true,
-  ];
+  // Try every combination of constraints to drop, but always prefer dropping as few as
+  // possible — and among equal-size drops, the most disposable ones first (RELAX_ORDER) —
+  // so a combo that only needs to give up one answer never ends up giving up three, and
+  // as many result chips as possible stay genuinely true to what was picked.
+  const n = RELAX_ORDER.length;
+  const dropSets = [];
+  for (let mask = 0; mask < 1 << n; mask++) {
+    dropSets.push(RELAX_ORDER.filter((_, i) => mask & (1 << i)));
+  }
+  dropSets.sort((a, b) => a.length - b.length || RELAX_ORDER.indexOf(a[0] ?? 'zzz') - RELAX_ORDER.indexOf(b[0] ?? 'zzz'));
 
-  // Walk tiers from strictest to loosest, but don't stop at the first one that merely has
-  // *a* match — stop at the first one that has a match other than what's already showing.
-  // Otherwise a tier with exactly one exact result (a real, common case) would make
-  // Regenerate return the same spot forever, even though looser tiers have real alternatives.
-  let lastNonEmpty = [];
-  for (const test of attempts) {
-    const matches = pool.filter(test);
+  let lastNonEmpty = pool;
+  for (const dropped of dropSets) {
+    const kept = RELAX_ORDER.filter((f) => !dropped.includes(f));
+    const matches = pool.filter((s) => kept.every((f) => constraintMatches(s, f, values[f])));
     if (!matches.length) continue;
     lastNonEmpty = matches;
     const usable = excludeName ? matches.filter((s) => s.name !== excludeName) : matches;
@@ -192,7 +199,7 @@ function pickSpot(excludeName) {
     }
   }
 
-  // Every tier had only the excluded spot (i.e. it's the sole match in this category) —
+  // Every combination had only the excluded spot (it's the sole match in this category) —
   // nothing else to offer, so return it again rather than nothing.
   return lastNonEmpty[Math.floor(Math.random() * lastNonEmpty.length)];
 }
