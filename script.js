@@ -177,17 +177,24 @@ function pickSpot(excludeName) {
     () => true,
   ];
 
-  let matches = [];
+  // Walk tiers from strictest to loosest, but don't stop at the first one that merely has
+  // *a* match — stop at the first one that has a match other than what's already showing.
+  // Otherwise a tier with exactly one exact result (a real, common case) would make
+  // Regenerate return the same spot forever, even though looser tiers have real alternatives.
+  let lastNonEmpty = [];
   for (const test of attempts) {
-    matches = pool.filter(test);
-    if (matches.length) break;
+    const matches = pool.filter(test);
+    if (!matches.length) continue;
+    lastNonEmpty = matches;
+    const usable = excludeName ? matches.filter((s) => s.name !== excludeName) : matches;
+    if (usable.length) {
+      return usable[Math.floor(Math.random() * usable.length)];
+    }
   }
 
-  if (excludeName && matches.length > 1) {
-    matches = matches.filter((s) => s.name !== excludeName);
-  }
-
-  return matches[Math.floor(Math.random() * matches.length)];
+  // Every tier had only the excluded spot (i.e. it's the sole match in this category) —
+  // nothing else to offer, so return it again rather than nothing.
+  return lastNonEmpty[Math.floor(Math.random() * lastNonEmpty.length)];
 }
 
 function showResult() {
